@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Source {
+  id        String   @id @default(cuid())
+  name      String
+  url       String   @unique
+  type      String   // "rss" or "youtube"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  items     Item[]
+}
+
+model Item {
+  id            String   @id @default(cuid())
+  sourceId      String
+  title         String
+  link          String   @unique
+  contentSnippet String?
+  publishedAt   DateTime
+  thumbnailUrl  String?  // For YouTube or article cover images
+  isShort       Boolean  @default(false) // To filter out YouTube shorts
+  
+  // States
+  isRead        Boolean  @default(false)
+  isSaved       Boolean  @default(false)
+  
+  // AI Feature
+  aiSummary     String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  source        Source   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+}
+
