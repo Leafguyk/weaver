@@ -15,6 +15,10 @@ const parser = new Parser({
 // Helper to determine if a YouTube video is a short
 async function checkIfIsShort(url: string): Promise<boolean> {
   try {
+    // If the RSS feed already explicitly marks it as a short in the URL, return true immediately
+    if (url.includes('/shorts/')) return true;
+
+    // Otherwise, attempt to extract the ID and verify via network request
     const videoIdMatch = url.match(/(?:v=|v\/|vi=|vi\/|youtu.be\/|\/v\/|\/e\/|embed\/|\/user\/.*\/u\/\d+\/|user\/[^/]+\/|watch\?v=|&v=)([^#&?]*).*/);
     if (!videoIdMatch || !videoIdMatch[1]) return false;
     
